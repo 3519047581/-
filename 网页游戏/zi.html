@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            align-items: flex-start;
+            background: transparent;
+            overflow: hidden;
+        }
+
+        .text {
+            font-size: 18px;
+            text-align: center;
+            font-weight: bold;
+            margin: 10px;
+            animation: fadeInOut 2s ease-in-out infinite;
+            transform: rotate(0deg);
+            position: relative;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0.2; }
+            50% { opacity: 0.5; }
+            100% { opacity: 0.2; }
+        }
+    </style>
+</head>
+<body>
+    <script>
+        // 修改初始化部分
+        window.onload = function() {
+            const body = document.body;
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+            const textWidth = 120;
+            const textHeight = 40;
+            
+            const columns = Math.ceil(windowWidth / textWidth);
+            const rows = Math.ceil(windowHeight / textHeight);
+            const totalTexts = columns * rows;
+
+            const colors = [
+                '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', 
+                '#FFEEAD', '#D4A5A5', '#9B59B6', '#E67E22'
+            ];
+
+            // 等待一帧后再创建文字元素
+            requestAnimationFrame(() => {
+                for(let i = 0; i < totalTexts; i++) {
+                    const div = document.createElement('div');
+                    div.className = 'text';
+                    div.textContent = ''; // 初始为空
+                    
+                    div.style.color = colors[Math.floor(Math.random() * colors.length)];
+                    div.style.animationDelay = (Math.random() * 2) + 's';
+                    div.style.fontSize = (Math.random() * 12 + 16) + 'px';
+                    div.style.transform = `rotate(${(Math.random() * 30 - 15)}deg)`;
+                    div.style.position = 'relative';
+                    div.style.left = (Math.random() * 20 - 10) + 'px';
+                    div.style.top = (Math.random() * 20 - 10) + 'px';
+
+                    body.appendChild(div);
+                }
+            });
+        }
+
+        // 修改脚本部分，添加监听localStorage变化
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'heartText') {
+                updateText(e.newValue);
+            }
+        });
+
+        // 添加更新文字的函数
+        function updateText(newText) {
+            const texts = document.querySelectorAll('.text');
+            texts.forEach(text => {
+                text.textContent = newText;
+            });
+        }
+
+        // 添加消息监听
+        window.addEventListener('message', function(event) {
+            if (event.data.type === 'updateText') {
+                updateText(event.data.text);
+            }
+        });
+    </script>
+</body>
+</html> 
